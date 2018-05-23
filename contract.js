@@ -1,32 +1,33 @@
 'use strict'
 
 var Game = function () {
+   LocalContractStorage.defineMapProperty(this, "scores")
+   LocalContractStorage.defineProperty(this, "topTen")
 }
 
 Game.prototype = {
   init: function () {
+    this.topTen = []
   },
   saveScore: function (nickname, score) {
-    if (typeof nickname !== 'string' || typeof score !== 'number') {
+    if (typeof nickname !== 'string' || (typeof score !== 'number' && typeof score !== 'string')) {
       throw new Error('error parameter type')
     }
 
-    var scores = LocalContractStorage.get('scores') || {}
-    if (scores[nickname]) {
-      throw new Error('the nickname is occupied, please choose another one')
+    var historyScore = this.scores.get(nickname)
+    if(historyScore && historyScore >= nickname){
+      return false
     }
 
-    scores[nickname] = score
+    this.scores.set(nickname, score)
     this._updateTopTen(nickname, score)
-    LocalContractStorage.set('scores', scores)
     return true
   },
   getScore: function (nickname) {
-    var scores = LocalContractStorage.get('scores') || {}
-    return scores[nickname]
+    return this.scores.get(nickname)
   },
   getTopTen: function () {
-    return LocalContractStorage.get('topTen') || []
+    return this.topTen
   },
   _updateTopTen: function (nickname, score) {
     var topTen = this.getTopTen()
@@ -35,12 +36,12 @@ Game.prototype = {
       score: score
     })
     topTen.sort(function (a, b) {
-      return a.scrore - b.score
+      return  b.score - a.score
     })
     if (topTen.length > 10) {
       topTen = topTen.slice(0, 9)
     }
-    LocalContractStorage.set('topTen', topTen)
+    this.topTen = topTen
   }
 }
 
