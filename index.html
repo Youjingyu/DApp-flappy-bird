@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>flappy bird</title>
+    <style>
+        .container{
+            width: 400px;
+            height: 500px;
+            margin: 0 auto;
+        }
+        #draw {
+            background-color: aquamarine;
+        }
+        #pipe_one,#pipe_two,#bird{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <canvas id="draw" width="400" height="500"></canvas>
+    <canvas id="pipe_one" width="400" height="500"></canvas>
+    <canvas id="pipe_two" width="400" height="500"></canvas>
+    <canvas id="bird" width="50" height="50"></canvas>
+</div>
+<script src="./lib/nebPay.js"></script>
+<script src="./lib/nebulas.js"></script>
+<script>
+    var canvas_pipe_one = document.getElementById('pipe_one');
+    var ctx_pipe_one = canvas_pipe_one.getContext('2d');
+
+    var canvas_pipe_two = document.getElementById('pipe_two');
+    var ctx_pipe_two = canvas_pipe_two.getContext('2d');
+
+    var canvas_bird = document.getElementById('bird');
+    var ctx_bird = canvas_bird.getContext('2d');
+
+    var ctx_stage = document.getElementById('draw').getContext('2d');
+    var pipe_obj_one ={
+        x:0
+    };
+    var pipe_obj_two ={
+        x:600
+    };
+    var bird_obj ={
+        x:100,
+        y:200,
+        speed:2,
+        gravity:0.3
+    };
+    var img_block = new Image();
+    img_block.src = 'img/pipe.png';
+
+    var img_bird = new Image();
+    img_bird.src = 'img/realBird.png';
+
+    img_bird.onload = function(){
+        ctx_bird.drawImage(img_bird, 0, 0);
+        ctx_stage.drawImage(canvas_bird, 100, 200);
+    };
+
+    img_block.onload = function(){
+        pipe_obj_one.position = update_block(ctx_pipe_one);
+        pipe_obj_two.position = update_block(ctx_pipe_two);
+        window.requestAnimationFrame(update_pipe);
+    };
+
+    document.addEventListener('keydown', function(e){
+        if(e.keyCode == 32){
+//            bird_obj.y -= 50;
+            bird_obj.speed = -5;
+        }
+    });
+
+    function update_block(canvas){
+        canvas.clearRect(0, 0, 400, 500);
+        var block_one =  drawPipe(canvas, 25);
+        var block_two =  drawPipe(canvas, 325);
+        return {
+            block_one: block_one,
+            block_two: block_two
+        }
+    }
+
+    function update_pipe(){
+        if(pipe_obj_one.x < -400){
+            pipe_obj_one.position = update_block(ctx_pipe_one);
+            pipe_obj_one.x=800;
+        }
+        if(pipe_obj_two.x < -400){
+            pipe_obj_two.position = update_block(ctx_pipe_two);
+            pipe_obj_two.x=800;
+        }
+
+        if(isDie()){
+            saveScore('user', 100);
+            alert('you died!');
+            return;
+        }
+        ctx_stage.clearRect(-400, 0, 1600, 500);
+
+        ctx_stage.drawImage(canvas_bird, bird_obj.x, bird_obj.y);
+        bird_obj.y = bird_obj.y + bird_obj.speed;
+        bird_obj.speed = bird_obj.speed + bird_obj.gravity;
+
+        ctx_stage.drawImage(canvas_pipe_one, pipe_obj_one.x, 0);
+        pipe_obj_one.x = pipe_obj_one.x-0.7;
+        ctx_stage.drawImage(canvas_pipe_one, pipe_obj_one.x, 0);
+        pipe_obj_one.x = pipe_obj_one.x-0.7;
+        ctx_stage.drawImage(canvas_pipe_two, pipe_obj_two.x, 0);
+        pipe_obj_two.x = pipe_obj_two.x-0.7;
+        ctx_stage.drawImage(canvas_pipe_two, pipe_obj_two.x, 0);
+        pipe_obj_two.x = pipe_obj_two.x-0.7;
+
+        window.requestAnimationFrame(update_pipe);
+    }
+
+    function drawPipe(canvas ,x_coordinate){
+        var no_pipe_one = Math.floor(Math.random()*10);
+        var no_pipe_two = no_pipe_one == 9 ? no_pipe_one-1 : no_pipe_one+1;
+        for(var y=0; y<10; y++){
+            if(y != no_pipe_one && y != no_pipe_two){
+                canvas.drawImage(img_block, x_coordinate, y*50);
+            }
+        }
+        return no_pipe_one == 9 ? no_pipe_one-1 : no_pipe_one;
+    }
+
+    function isDie(){
+        if(pipe_obj_one.x<400 && pipe_obj_one.x>-400){
+            if(
+                    (pipe_obj_one.x<bird_obj.x+25 &&
+                    pipe_obj_one.x>bird_obj.x-75) &&
+                    (bird_obj.y>pipe_obj_one.position.block_one*50+100 ||
+                    bird_obj.y<pipe_obj_one.position.block_one*50)
+            ){
+                return true;
+            } else if(
+                    (pipe_obj_one.x<bird_obj.x-275 &&
+                    pipe_obj_one.x>bird_obj.x-375) &&
+                    (bird_obj.y>pipe_obj_one.position.block_two*50+100 ||
+                    bird_obj.y<pipe_obj_one.position.block_two*50)
+            ){
+                return true;
+            }
+        } else if(pipe_obj_two.x<400 && pipe_obj_two.x>-400){
+            if(
+                    (pipe_obj_two.x<bird_obj.x+25 &&
+                    pipe_obj_two.x>bird_obj.x-75) &&
+                    (bird_obj.y>pipe_obj_two.position.block_one*50+100 ||
+                    bird_obj.y<pipe_obj_two.position.block_one*50)
+            ){
+                return true;
+            } else if(
+                    (pipe_obj_two.x<bird_obj.x-275 &&
+                    pipe_obj_two.x>bird_obj.x-375) &&
+                    (bird_obj.y>pipe_obj_two.position.block_two*50+100 ||
+                    bird_obj.y<pipe_obj_two.position.block_two*50)
+            ){
+                return true;
+            }
+        } else{
+            return false;
+        }
+    }
+
+// var dappAddressTest = 'n1wK9pdeSbTM47S2xywrndU5pGoko2AW3hC';
+var dappAddress ="n1z63UhLwNNacTwHWcj1JaK9w7WLRHhNtPH";
+
+var nebulas = require("nebulas"),
+    Account = nebulas.Account,
+    neb = new nebulas.Neb();
+neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
+
+
+//to check if the extension is installed
+//if the extension is installed, var "webExtensionWallet" will be injected in to web page
+if(typeof(webExtensionWallet) === "undefined"){
+    alert ("https://github.com/ChengOrangeJu/WebExtensionWallet  is not installed, please install it first.")
+}
+
+function saveScore(nickname, score){
+
+
+    var from = Account.NewAccount().getAddressString();
+
+    var value = "0";
+    var nonce = "0"
+    var gas_price = "1000000"
+    var gas_limit = "2000000"
+    var callFunction = "saveScore";
+    var callArgs = '["' + nickname + '",' + score + ']'; //in the form of ["args"]
+    var contract = {
+        "function": callFunction,
+        "args": callArgs
+    }
+
+    neb.api.call(from,dappAddress,value,nonce,gas_price,gas_limit,contract).then(function (resp) {
+        console.log(resp);
+        // cbSearch(resp)
+    }).catch(function (err) {
+        //cbSearch(err)
+        console.log("error:" + err.message)
+    })
+
+}
+</script>
+</body>
+</html>
