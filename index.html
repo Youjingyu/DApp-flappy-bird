@@ -173,7 +173,6 @@ var nebulas = require("nebulas"),
     neb = new nebulas.Neb();
 neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
 
-
 //to check if the extension is installed
 //if the extension is installed, var "webExtensionWallet" will be injected in to web page
 if(typeof(webExtensionWallet) === "undefined"){
@@ -181,7 +180,6 @@ if(typeof(webExtensionWallet) === "undefined"){
 }
 
 function saveScore(nickname, score){
-
 
     var from = Account.NewAccount().getAddressString();
 
