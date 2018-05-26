@@ -427,14 +427,14 @@ Screen - Game
   }
   .rank-list h3{
     margin: 5px 0;
-    font-size: 18px;
+    font-size: 16px;
   }
   .rank-list-item{
     margin: 3px 0;
   }
   .rank-list-item img{
-    width: 20px;
-    height: 20px;
+    width: 17px;
+    height: 17px;
   }
 }
 
