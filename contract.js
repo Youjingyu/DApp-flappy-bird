@@ -1,8 +1,8 @@
 'use strict'
 
 var Game = function () {
-   LocalContractStorage.defineMapProperty(this, "scores")
-   LocalContractStorage.defineProperty(this, "topTen")
+  LocalContractStorage.defineMapProperty(this, 'scores')
+  LocalContractStorage.defineProperty(this, 'topTen')
 }
 
 Game.prototype = {
@@ -15,7 +15,7 @@ Game.prototype = {
     }
 
     var historyScore = this.scores.get(nickname)
-    if(historyScore && historyScore >= nickname){
+    if (historyScore && historyScore >= nickname) {
       return false
     }
 
@@ -36,7 +36,7 @@ Game.prototype = {
       score: score
     })
     topTen.sort(function (a, b) {
-      return  b.score - a.score
+      return b.score - a.score
     })
     if (topTen.length > 10) {
       topTen = topTen.slice(0, 9)
