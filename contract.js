@@ -15,12 +15,12 @@ Game.prototype = {
     }
 
     var historyScore = this.scores.get(nickname)
+    this._updateTopTen(nickname, score)
     if (historyScore && historyScore >= score) {
       return false
     }
 
     this.scores.set(nickname, score)
-    this._updateTopTen(nickname, score)
     return true
   },
   getScore: function (nickname) {

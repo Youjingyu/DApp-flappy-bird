@@ -147,14 +147,17 @@
             "method": "getAccount",
         }   , "*")
 
-        var dappAddress ="n1zQBLCqsBn85ghYPkSEgzbsKJWhJaJhP29";
+        // changed for online
+        var dappAddress ="n1f2XPDxiU3WuZLzXPiDcQ3r3kN2SBn8ueW";
+        // var dappAddress ="n1eAXiyRcvwtrvqpj4LBztEx34dM9GZGHw7";
 
         var nebulas = require("nebulas"),
             neb = new nebulas.Neb();
         var NebPay = require("nebpay"),
             nebpay = new NebPay();
-        // neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
-        neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
+        // changed for online
+        neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
+        // neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
 
         if(typeof(webExtensionWallet) === "undefined"){
             alert ("https://github.com/ChengOrangeJu/WebExtensionWallet  is not installed, please install it first.")
