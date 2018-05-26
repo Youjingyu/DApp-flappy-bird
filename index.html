@@ -128,6 +128,12 @@
       <script src="./lib/nebulas.js"></script>
       <script src="./dialog/remodal.min.js"></script>
       <script>
+        setTimeout(function(){
+            if(typeof(webExtensionWallet) === "undefined"){
+                alert ("https://github.com/ChengOrangeJu/WebExtensionWallet  is not installed, please install it first.")
+            }
+        }, 1000)
+
         var inst = $('[data-remodal-id=modal]').remodal();
         var loading = $('[data-remodal-id=loading]').remodal();
 
@@ -149,6 +155,8 @@
 
         // changed for online
         var dappAddress ="n1f2XPDxiU3WuZLzXPiDcQ3r3kN2SBn8ueW";
+        // 合约hash
+        // 2b5b2a33da998f175a97a16457d2c3161b74a67f5f54804cd4b5164348658996
         // var dappAddress ="n1eAXiyRcvwtrvqpj4LBztEx34dM9GZGHw7";
 
         var nebulas = require("nebulas"),
@@ -158,10 +166,6 @@
         // changed for online
         neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
         // neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
-
-        if(typeof(webExtensionWallet) === "undefined"){
-            alert ("https://github.com/ChengOrangeJu/WebExtensionWallet  is not installed, please install it first.")
-        }
 
         function getScore () {
             request('getScore', [fromAddress], function (err, res) {
