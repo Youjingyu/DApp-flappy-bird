@@ -15,7 +15,7 @@ Game.prototype = {
     }
 
     var historyScore = this.scores.get(nickname)
-    if (historyScore && historyScore >= nickname) {
+    if (historyScore && historyScore >= score) {
       return false
     }
 
@@ -39,7 +39,7 @@ Game.prototype = {
       return b.score - a.score
     })
     if (topTen.length > 10) {
-      topTen = topTen.slice(0, 9)
+      topTen = topTen.slice(0, 10)
     }
     this.topTen = topTen
   }

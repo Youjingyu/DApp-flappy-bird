@@ -375,6 +375,7 @@ function showScore()
    //remove the big score
    setBigScore(true);
 
+   saveScore(score)
    //have they beaten their high score?
    if(score > highscore)
    {

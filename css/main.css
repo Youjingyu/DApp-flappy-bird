@@ -376,7 +376,7 @@ Screen - Game
 .rank-list{
   margin: 0 auto;
   width: 100%;
-  max-width: 500px;
+  max-width: 1200px;
   font-size: 16px;
 }
 .rank-list h3{
@@ -400,6 +400,25 @@ Screen - Game
   height: 25px;
   vertical-align: middle;
 }
+.rank-list-item > span {
+ display: inline-block;
+ width: 80%;
+ vertical-align: middle;
+}
+.rank-list-item .nick-name{
+  display: inline-block;
+  width: 85%;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
+.rank-list-item .score{
+  display: inline-block;
+  vertical-align: top;
+  color: #ecc566;
+  font-weight: bold;
+}
 
 @media only screen and (max-width: 768px) {
   .rank-list{
@@ -417,4 +436,15 @@ Screen - Game
     width: 20px;
     height: 20px;
   }
+}
+
+.dialog-content {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 120%;
+}
+
+body{
+  padding: 0!important
 }

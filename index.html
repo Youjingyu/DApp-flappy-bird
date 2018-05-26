@@ -19,55 +19,57 @@
       <!-- Style sheets -->
       <link href="css/reset.css" rel="stylesheet">
       <link href="css/main.css" rel="stylesheet">
+      <link rel="stylesheet" href="./dialog/remodal.css">
+      <link rel="stylesheet" href="./dialog/remodal-default-theme.css">
    </head>
    <body>
       <div id="gamecontainer">
          <div id="gamescreen">
             <div id="sky" class="animated">
                 <div id="rank-list" class="rank-list">
-                    <h3>排&nbsp;&nbsp;名</h3>
+                    <h3>Rank</h3>
                     <div class="rank-list-left">
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron1.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron2.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron3.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron4.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron4.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                     </div>
                     <div class="rank-list-right">
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron4.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron4.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron4.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron4.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                         <div class="rank-list-item">
                             <img src="./assets/rank/chevron4.svg" alt="rank">
-                            <span></span>
+                            <span class="user-data"></span>
                         </div>
                     </div>
                 </div>
@@ -98,50 +100,139 @@
       </div>
       <div class="boundingbox" id="playerbox"></div>
       <div class="boundingbox" id="pipebox"></div>
-
+      <div class="remodal-bg">
+        ...Page content...
+      </div>
+      <div class="remodal" data-remodal-id="modal">
+        <button data-remodal-action="close" class="remodal-close"></button>
+        <p class="dialog-content">
+            Save your score to the blockchain, and pk with other players<br>
+            （将你的分数保存到区块链，与其他玩家pk）
+        </p>
+        <br>
+        <button data-remodal-action="cancel" class="remodal-cancel">Cancel</button>
+        <button data-remodal-action="confirm" class="remodal-confirm">OK</button>
+      </div>
       <script src="js/jquery.min.js"></script>
       <script src="js/jquery.transit.min.js"></script>
       <script src="js/buzz.min.js"></script>
       <script src="js/main.js"></script>
+      <script src="./lib/nebPay.js"></script>
+      <script src="./lib/nebulas.js"></script>
+      <script src="./dialog/remodal.min.js"></script>
       <script>
-          // var dappAddressTest = 'n1wK9pdeSbTM47S2xywrndU5pGoko2AW3hC';
-var dappAddress ="n1z63UhLwNNacTwHWcj1JaK9w7WLRHhNtPH";
+        var inst = $('[data-remodal-id=modal]').remodal();
 
-var nebulas = require("nebulas"),
-    Account = nebulas.Account,
-    neb = new nebulas.Neb();
-neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
+        var rankListItem = document.getElementById('rank-list').getElementsByClassName('user-data')
+        var fromAddress = ''
+        window.addEventListener('message', function (e) {
+            var res = e.data && e.data.data && e.data.data.account
+            if (res) {
+                fromAddress = res
+                getTopTen()
+                getScore()
+            }
+        })
+        window.postMessage({
+            "target": "contentscript",
+            "data": {},
+            "method": "getAccount",
+        }   , "*")
 
-//to check if the extension is installed
-//if the extension is installed, var "webExtensionWallet" will be injected in to web page
-if(typeof(webExtensionWallet) === "undefined"){
-    alert ("https://github.com/ChengOrangeJu/WebExtensionWallet  is not installed, please install it first.")
-}
+        var dappAddress ="n1nzHG1VAQjpNAyz7aYMipqnsZXmRCqVM66";
 
-function saveScore(nickname, score){
+        var nebulas = require("nebulas"),
+            neb = new nebulas.Neb();
+        var NebPay = require("nebpay"),
+            nebpay = new NebPay();
+        // neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
+        neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
 
-    var from = Account.NewAccount().getAddressString();
+        // var Account = nebulas.Account
+        // fromAddress = Account.NewAccount().getAddressString()
 
-    var value = "0";
-    var nonce = "0"
-    var gas_price = "1000000"
-    var gas_limit = "2000000"
-    var callFunction = "saveScore";
-    var callArgs = '["' + nickname + '",' + score + ']'; //in the form of ["args"]
-    var contract = {
-        "function": callFunction,
-        "args": callArgs
-    }
+        //to check if the extension is installed
+        //if the extension is installed, var "webExtensionWallet" will be injected in to web page
+        if(typeof(webExtensionWallet) === "undefined"){
+            alert ("https://github.com/ChengOrangeJu/WebExtensionWallet  is not installed, please install it first.")
+        }
 
-    neb.api.call(from,dappAddress,value,nonce,gas_price,gas_limit,contract).then(function (resp) {
-        console.log(resp);
-        // cbSearch(resp)
-    }).catch(function (err) {
-        //cbSearch(err)
-        console.log("error:" + err.message)
-    })
+        function getScore () {
+            request('getScore', [fromAddress], function (err, res) {
+                if (!err && /^\d+$/.test(res.result)) {
+                    highscore = res.result
+                    console.log('saved cookie score: ' + res.result)
+                    setCookie("highscore", res.result, 999)
+                }
+            })
+        }
+        function getTopTen(){
+            request('getTopTen', [], function(err, res){
+                if (!err) {
+                    var topTen = JSON.parse(res.result)
+                    console.log(topTen, topTen.length)
+                    topTen.forEach(function (item, index) {
+                        rankListItem[index].innerHTML =
+                            '<span class="nick-name">'+  topTen[index].nickname  + '</span>' +
+                            '<span class="score">' + topTen[index].score + '</span>'
+                    });
+                }
+            })
+        }
+        function saveScore(score){
+            inst.open();
+        }
+        $(document).on('confirmation', '.remodal', function () {
+            saveRequst('saveScore', [fromAddress, score], function () {
+                getTopTen()
+                console.log('saved ' + score + ' points to ' + fromAddress)
+            })
+        });
 
-}
+        function request (func, args, cb) {
+            var value = "0";
+            var nonce = "0"
+            var gas_price = "1000000"
+            var gas_limit = "2000000"
+            var contract = {
+                "function": func,
+                "args": JSON.stringify(args) //in the form of ["args"]
+            }
+
+            neb.api.call(fromAddress,dappAddress,value,nonce,gas_price,gas_limit,contract).then(function (resp) {
+                cb && cb(null, resp);
+            }).catch(function (err) {
+                console.log(err)
+                cb && cb(err)
+            })
+        }
+        var timer
+        function saveRequst(func, args, cb) {
+            var value = "0"
+            nebpay.call(dappAddress, value, func, JSON.stringify(args), {
+                listener: function (resp) {
+                    console.log(resp)
+                    if(resp !==null && (typeof resp =="string") && resp.indexOf("rejected by user") > -1) {
+                        return
+                    }
+                    var txhash = resp.txhash;
+                    timer = setInterval(function(){
+                        neb.api.getTransactionReceipt(txhash)
+                            .then(function(o) {
+                                console.log(o)
+                                if(o.status  == 1){
+                                    console.log('transact successfully')
+                                    clearInterval(timer)
+                                    cb && cb(null, o)
+                                }
+                            })
+                            .catch(function (o){
+                                console.info(o);
+                            });
+                    },2000);
+                }
+            })
+        }
       </script>
    </body>
 </html>
