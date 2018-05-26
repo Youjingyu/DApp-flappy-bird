@@ -444,6 +444,9 @@ Screen - Game
   font-size: 20px;
   line-height: 120%;
 }
+.loading h3{
+  font-size: 20px;
+}
 
 body{
   padding: 0!important

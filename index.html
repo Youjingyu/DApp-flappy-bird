@@ -12,8 +12,8 @@
       <meta property="og:title" content="Floppy Bird" />
       <meta property="og:description" content="play floppy bird. a remake of popular game flappy bird using just html/css/js" />
       <meta property="og:type" content="website" />
-      <meta property="og:image" content="http://nebez.github.io/floppybird/assets/thumb.png" />
-      <meta property="og:url" content="http://nebez.github.io/floppybird/" />
+      <meta property="og:image" content="http://Youjingyu.github.io/DApp-flappy-bird/assets/thumb.png" />
+      <meta property="og:url" content="http://Youjingyu.github.io/DApp-flappy-bird/" />
       <meta property="og:site_name" content="Floppy Bird" />
 
       <!-- Style sheets -->
@@ -113,6 +113,13 @@
         <button data-remodal-action="cancel" class="remodal-cancel">Cancel</button>
         <button data-remodal-action="confirm" class="remodal-confirm">OK</button>
       </div>
+      <div class="remodal" data-remodal-id="loading"
+        data-remodal-options="closeOnOutsideClick:true">
+          <div class="loading">
+            <h3>saving score...</h3>
+            <img src="./dialog/loding.gif" alt="">
+          </div>
+      </div>
       <script src="js/jquery.min.js"></script>
       <script src="js/jquery.transit.min.js"></script>
       <script src="js/buzz.min.js"></script>
@@ -122,6 +129,7 @@
       <script src="./dialog/remodal.min.js"></script>
       <script>
         var inst = $('[data-remodal-id=modal]').remodal();
+        var loading = $('[data-remodal-id=loading]').remodal();
 
         var rankListItem = document.getElementById('rank-list').getElementsByClassName('user-data')
         var fromAddress = ''
@@ -139,7 +147,7 @@
             "method": "getAccount",
         }   , "*")
 
-        var dappAddress ="n1nzHG1VAQjpNAyz7aYMipqnsZXmRCqVM66";
+        var dappAddress ="n1zQBLCqsBn85ghYPkSEgzbsKJWhJaJhP29";
 
         var nebulas = require("nebulas"),
             neb = new nebulas.Neb();
@@ -148,11 +156,6 @@
         // neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
         neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
 
-        // var Account = nebulas.Account
-        // fromAddress = Account.NewAccount().getAddressString()
-
-        //to check if the extension is installed
-        //if the extension is installed, var "webExtensionWallet" will be injected in to web page
         if(typeof(webExtensionWallet) === "undefined"){
             alert ("https://github.com/ChengOrangeJu/WebExtensionWallet  is not installed, please install it first.")
         }
@@ -166,11 +169,12 @@
                 }
             })
         }
-        function getTopTen(){
+        function getTopTen(cb){
             request('getTopTen', [], function(err, res){
                 if (!err) {
                     var topTen = JSON.parse(res.result)
                     console.log(topTen, topTen.length)
+                    cb && cb()
                     topTen.forEach(function (item, index) {
                         rankListItem[index].innerHTML =
                             '<span class="nick-name">'+  topTen[index].nickname  + '</span>' +
@@ -183,8 +187,11 @@
             inst.open();
         }
         $(document).on('confirmation', '.remodal', function () {
+            loading.open()
             saveRequst('saveScore', [fromAddress, score], function () {
-                getTopTen()
+                getTopTen(function () {
+                    loading.close()
+                })
                 console.log('saved ' + score + ' points to ' + fromAddress)
             })
         });
